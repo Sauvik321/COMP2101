@@ -1,0 +1,188 @@
+#!/bin/bash
+# This will be my last submission for the final bash assignment.
+# This script will tell you the following system configurations:
+#System name with domain name if it has one
+#IP addresses for this host by interface, leave out locahost loopback network
+#OS version and name
+#CPU description
+#Memory installed
+#Available disk space on attached physical drives
+#List of printers configured
+
+default="yes"
+#Asssigning the help varibale for the following script
+function system {
+echo "
+  One or more outputs can be shown for the following:
+$0 [-Help | --help list]
+$0 [-Name | --Showing domain name and the hostname of that machine]
+$0 [-IP | --Displays the IP configuration of this PC]
+$0 [-OS | --Name of Operating system]
+$0 [-PC | --PC configurations]
+$0 [-RAM | --Display Memory details]
+$0 [-DISK | --shows available Disk Space]
+$0 [-PL  | --Displays printers list]
+  "
+#Assigning the error function for the following script
+function error {
+  echo "$@" >&2
+}
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -Help)
+    helpoptions="yes"
+    default="no"
+    ;;
+
+    -Name)
+    systeminfo="yes"
+    default="no"
+    ;;
+
+    -IP)
+    ipconf="yes"
+    default="no"
+    ;;
+
+    -OS)
+    pcconf="yes"
+    default="no"
+    ;;
+
+    -PC)
+    pcinfo="yes"
+    default="no"
+    ;;
+
+    -RAM)
+    memory="yes"
+    default="no"
+    ;;
+
+    -DISK)
+    disk="yes"
+    default="no"
+    ;;
+
+    -PL)
+    printerlist="yes"
+    default="no"
+    ;;
+    *)
+    error "
+    '$1' Please read and choose options carefully"
+    exit 1
+    ;;
+  esac
+  shift
+done
+}
+#Assigning the values or the corrosponding data into the following set of variables
+sysname="$(hostname)"
+domainname="$(domainname)"
+
+pcinfo=$(uname -o)
+krnlinfo=$(uname -r)
+extra=$(lsb_release -a)
+
+
+ip=$(/sbin/ifconfig | grep 'inet addr:')
+
+pc=$(cat /proc/cpuinfo)
+
+memory=$(free -m)
+
+disk=$(df -h)
+
+printer=$(lpstat -p | awk '{print $2}')
+
+#Displaying the information given above
+#host information including domain
+abc="
+PC Name:
+.............
+ $sysname
+
+DOMAIN:
+..........
+ $domainname
+"
+
+#IP address Details
+ipinfo="
+Your PC has an IP Address:
+-----------------------
+$ip
+"
+#Operating system information
+KernelINFO="
+$extra
+Version of running kernel:
+-------------------------
+$krnlinfo
+
+Type:
+-------
+$pcinfo
+"
+#CPU details
+PCDetails="
+CPU Information:
+----------------
+$pc
+"
+#RAM details
+Memory="
+Memory on your system is:
+--------------------------
+$memory
+"
+#Disk details
+HARDDISK="
+Hard disk configuration is as follows:
+---------------------------------------
+$disk
+"
+#Printer details
+pri="
+List of printers configured:
+------------------------------
+$printer
+"
+# Printing the following outputs for the script
+if [ "$default" = "yes" -o "$systeminfo" = "yes" ]; then
+  echo "$abc"
+fi
+
+if [ "$default" = "yes" -o "$ipconf" = "yes" ]; then
+  echo "$ipinfo"
+fi
+
+if [ "$default" = "yes" -o "$pcconf" = "yes" ]; then
+  echo "$KernelINFO"
+fi
+
+if [ "$default" = "yes" -o "$pcinfo" = "yes" ]; then
+  echo "$PCDetails"
+fi
+
+if [ "$default" = "yes" -o "$memory" = "yes" ]; then
+  echo "$Memory"
+fi
+
+if [ "$default" = "yes" -o "$disk" = "yes" ]; then
+  echo "$HARDDISK"
+fi
+
+if [ "$default" = "yes" -o "$printerlist" = "yes" ]; then
+  echo "$pri"
+echo "There is no printer connected"
+fi
+#<<<<<<<Submitted By:>>>>>>
+#<<<<<<<Sauvik Dhiman>>>>>>
+#<<<<<<<200359933>>>>>>>
+#<<<<<<<Administrative Scripting>>>>>>
+#<<<<<<<Instructor: Dennis Simpson>>>>>>>
+#<<<<<<<BASH ASSIGNMENT>>>>>>>>>
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<THANK YOU>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<THE END>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
